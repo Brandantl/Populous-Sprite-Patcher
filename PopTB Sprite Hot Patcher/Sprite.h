@@ -9,9 +9,11 @@
 #include <fstream>
 #include <memory>
 
+#define SPRITE_MAGIC_SIZE 4
+
 struct sprite_header
 {
-    char        magic[4];
+    int8_t      magic[SPRITE_MAGIC_SIZE];
     uint32_t    frame_count;
 };
 
@@ -25,13 +27,7 @@ struct sprite_frame_header
 struct TbSprite
 {
     struct sprite_frame_header* header;
-    signed char*                data; 
-};
-
-struct updateOffset
-{
-    uint32_t offset;
-    uint32_t position_offset;
+    int8_t*                     data;
 };
 
 struct SpriteFile
@@ -43,12 +39,10 @@ struct SpriteFile
 class Sprite
 {
 public:
-    Sprite() : _raw_file(nullptr), _raw_file_size(0) { }
+    Sprite() noexcept : _raw_file(nullptr), _raw_file_size(NULL), _data({ nullptr,{} }) {}
 
-    Sprite(const std::string file) : _raw_file(nullptr), _raw_file_size(0)
+    Sprite(const std::string & file) : _raw_file(nullptr), _raw_file_size(NULL), _data({ nullptr, {} })
     {
-        _data.header = nullptr;
-
         loadspr(file);
     }
 
@@ -57,7 +51,7 @@ public:
         clean(_data);
     }
 
-    void loadspr(const std::string file)
+    void loadspr(const std::string & file)
     {
         std::ifstream reader(file, std::ios::binary | std::ios::ate);
 
@@ -85,14 +79,14 @@ public:
             for (uint32_t i = 0; i < _data.header->frame_count; i++)
             {
                 _data.sprite_data.push_back({ reinterpret_cast<sprite_frame_header*>((_raw_file + byteLoc) + (i * sizeof(sprite_frame_header))), nullptr });
-                _data.sprite_data.back().data = reinterpret_cast<signed char*>(_raw_file + _data.sprite_data.back().header->offset);
+                _data.sprite_data.back().data = reinterpret_cast<int8_t*>(_raw_file + _data.sprite_data.back().header->offset);
             }
 
             reader.close();
         }
     }
 
-    void savespr(const std::string file)
+    void savespr(const std::string & file)
     {
         std::ofstream writer(file, std::ios::binary | std::ios::trunc);
 

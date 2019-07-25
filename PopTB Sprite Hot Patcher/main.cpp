@@ -22,16 +22,17 @@ int main(int argc, char *argv[])
 
     auto spr = Sprite(source);
 
-
     // Patch Image
-    signed char     byte;
-    unsigned char   clr;
-    unsigned char   rclr;
-    signed char *   curr;
+    int8_t          byte, *curr;
+    unsigned char   clr, rclr;
     int             num, j, y, x;
 
     auto hot_patch_spr_image = [&byte, &clr, &rclr, &curr, &num, &j, &y, &x](TbSprite & spr)
     {
+        // Most of this code is just to scan the sprites X, Y locations and checking the byte
+        // if its the color we want to replace. If it is we replace it in the j = 1 loop below.
+
+        // This is also how you can draw sprites.
         curr = spr.data;
         y = 0;
         x = 0;
@@ -58,31 +59,31 @@ int main(int argc, char *argv[])
                     rclr = 0;
 
                     // BLUE
-                    if (clr >= 216 && clr <= 223)
+                    if (clr >= 216 && clr <= 223) // Blues pal color codes
                     {
                         rclr = clr - 76;
-                        (*curr) = rclr;
+                        (*curr) = rclr; // Change pal color to this new pal color.
                     }
 
                     // RED
-                    if (clr >= 240 && clr <= 247)
+                    if (clr >= 240 && clr <= 247) // Reds pal color codes
                     {
                         rclr = clr - 32;
-                        (*curr) = rclr;
+                        (*curr) = rclr; // Change pal color to this new pal color.
                     }
 
                     // YELLOW
-                    if (clr >= 232 && clr <= 239)
+                    if (clr >= 232 && clr <= 239) // Yellows pal color codes
                     {
                         rclr = clr - 72;
-                        (*curr) = rclr;
+                        (*curr) = rclr; // Change pal color to this new pal color.
                     }
 
-                    // GREEN
-                    if (clr >= 224 && clr <= 231)
+                    // GREEN 
+                    if (clr >= 224 && clr <= 231) // Greens pal color codes
                     {
                         rclr = clr - 92;
-                        (*curr) = rclr;
+                        (*curr) = rclr; // Change pal color to this new pal color.
                     }
 
                     curr++;
